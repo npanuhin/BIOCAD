@@ -4,7 +4,7 @@
 
 ## Analysis status
 
-<h3 align="center"><a href="https://github.com/npanuhin/BIOCAD_BWA/blob/master/tests/README.md">View current test results</a></h3>
+<h3 align="center"><a href="https://github.com/npanuhin/BIOCAD/blob/master/output/analysis/README.md">View current test results</a></h3>
 
 ✅ - Works as intended
 ⚠ - There are problems, but the solution is possible
@@ -23,6 +23,15 @@
 - ✅ large11
 - ❌ large12
 - ✅ small (BWA⚠)
+
+
+## Probably useful
+* [Web-site](https://www.ncbi.nlm.nih.gov/) with cut off genomes ([https://www.ncbi.nlm.nih.gov/](https://www.ncbi.nlm.nih.gov/))
+* [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) partly algo explanation (https://en.wikipedia.org/wiki/BLAST_(biotechnology))
+* [DUST algo](https://kodomo.fbb.msu.ru/FBB/year_10/ppt/DUST.pdf) (https://kodomo.fbb.msu.ru/FBB/year_10/ppt/DUST.pdf) 
+* [E-value pt.1](https://www.youtube.com/watch?v=jA_ROVJTQF8&t=275s) (https://www.youtube.com/watch?v=jA_ROVJTQF8&t=275s) 
+   & [E-value pt.2](https://www.youtube.com/watch?v=i-IDrTrPMFg) (https://www.youtube.com/watch?v=i-IDrTrPMFg)
+
 
 ## Samples
 
@@ -61,10 +70,3 @@
 ---
 12. [`large12/large_genome1.fasta`](./samples/large12): [Rickettsia argasii T170-B grat170.contig.0_1, whole genome shotgun sequence](https://www.ncbi.nlm.nih.gov/nuccore/796968827)  
    [`large12/large_genome2.fasta`](./samples/large12): [Rickettsia endosymbiont of Ixodes pacificus strain Humboldt reip.contig.0_1, whole genome shotgun sequence](https://www.ncbi.nlm.nih.gov/nuccore/796883041)
-
-## Probably useful
-* [Web-site](https://www.ncbi.nlm.nih.gov/) with cut off genomes ([https://www.ncbi.nlm.nih.gov/](https://www.ncbi.nlm.nih.gov/))
-* [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) partly algo explanation (https://en.wikipedia.org/wiki/BLAST_(biotechnology))
-* [DUST algo](https://kodomo.fbb.msu.ru/FBB/year_10/ppt/DUST.pdf) (https://kodomo.fbb.msu.ru/FBB/year_10/ppt/DUST.pdf) 
-* [E-value pt.1](https://www.youtube.com/watch?v=jA_ROVJTQF8&t=275s) (https://www.youtube.com/watch?v=jA_ROVJTQF8&t=275s) 
-   & [E-value pt.2](https://www.youtube.com/watch?v=i-IDrTrPMFg) (https://www.youtube.com/watch?v=i-IDrTrPMFg)
