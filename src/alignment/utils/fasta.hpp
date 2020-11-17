@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#define SAMPLES_DIR "./samples/"
+
 class FastaSequence;
 
 class FastaFileContent {

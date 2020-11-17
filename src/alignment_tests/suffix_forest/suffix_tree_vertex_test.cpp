@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "../tests_maintenance.hpp"
-#include "../../source/suffix_forest/suffix_tree/builder/vertex/suffix_tree_vertex.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/builder/vertex/suffix_tree_vertex.hpp"
 
 
 void updateInfoTest();

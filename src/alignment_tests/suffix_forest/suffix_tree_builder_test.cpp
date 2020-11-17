@@ -1,9 +1,9 @@
 #include <assert.h>
 
 #include "../tests_maintenance.hpp"
-#include "../../source/suffix_forest/suffix_tree/builder/vertex/suffix_tree_vertex.hpp"
-#include "../../source/suffix_forest/suffix_tree/builder/suffix_tree_builder.hpp"
-#include "../../source/suffix_forest/suffix_tree/builder/subsidiary/subsidiary.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/builder/vertex/suffix_tree_vertex.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/builder/suffix_tree_builder.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/builder/subsidiary/subsidiary.hpp"
 
 
 void getVertexSubstringTest();

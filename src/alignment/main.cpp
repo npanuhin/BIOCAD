@@ -6,12 +6,12 @@
 
 int main() {
     startTiming();
-    auto *firstFastaFile = new FastaFileContent("large2/large_genome2.fasta"),
-            *secondFastaFile = new FastaFileContent("large2/large_genome1.fasta");
+    auto *firstFastaFile = new FastaFileContent("large02/large_genome2.fasta"),
+            *secondFastaFile = new FastaFileContent("large02/large_genome1.fasta");
     auto sliceMatcher = new GlobalApproximateSliceMatcher(firstFastaFile->sequences.at(0),
                                                           secondFastaFile->sequences.at(0),
                                                           100);
-    auto fileFormatter = new ApproximateSliceMatchesFileFormat("large2_100.txt");
+    auto fileFormatter = new ApproximateSliceMatchesFileFormat("large02_100.txt");
     fileFormatter->write(sliceMatcher);
     delete sliceMatcher;
     delete fileFormatter;

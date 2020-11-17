@@ -1,9 +1,9 @@
 CC = g++ -std=gnu++0x -std=c++17
 PYTHON_INTERPRETER = python3
 
-SOURCE_DIR = source
-TEST_DIR = tests
-INFOGRAPHIC_DIR = infographic
+SOURCE_DIR = src/alignment
+TEST_DIR = src/alignment_tests
+INFOGRAPHIC_DIR = src/alignment
 
 MAIN_ALGO_FILE = $(SOURCE_DIR)/main.cpp
 MAIN_BIN_FILE = main_algo.exe

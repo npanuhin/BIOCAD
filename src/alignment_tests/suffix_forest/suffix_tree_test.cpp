@@ -1,7 +1,8 @@
 #include <assert.h>
 #include <algorithm>
+
 #include "../tests_maintenance.hpp"
-#include "../../source/suffix_forest/suffix_tree/suffix_tree.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/suffix_tree.hpp"
 
 
 void getEntryIndexesTest();

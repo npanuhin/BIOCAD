@@ -8,9 +8,9 @@
 #include <algorithm>
 
 #include "../tests_maintenance.hpp"
-#include "../../source/suffix_forest/suffix_forest.hpp"
+#include "../../alignment/suffix_forest/suffix_forest.hpp"
 
-#define SUFFIX_FOREST_TEST_DIR "./tests/suffix_forest/"
+#define SUFFIX_FOREST_TEST_DIR "./src/alignment_tests/suffix_forest/"
 
 void getEntryIndexesTest();
 

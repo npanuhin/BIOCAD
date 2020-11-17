@@ -1,9 +1,12 @@
-from sys import path as sys_path
-sys_path.append("../analysis")
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath("./src/analysis/"))
+
 from Plot import Plot
 import os
 
-RELATIVE_PATH_TO_SLICE_MATCHES_DIR = '../../output/slice_matches/'
+RELATIVE_PATH_TO_SLICE_MATCHES_DIR = './output/alignment/'
 
 
 def ask_file_name():
@@ -11,7 +14,7 @@ def ask_file_name():
     print('Enter file number:')
     print('------------------')
     for i in range(len(all_slice_matches_files)):
-        print('{} | {}'.format(i + 1, all_slice_matches_files[i]))
+        print('{}\t| {}'.format(i + 1, all_slice_matches_files[i]))
     print('------------------')
     try:
         file_index = int(input()) - 1

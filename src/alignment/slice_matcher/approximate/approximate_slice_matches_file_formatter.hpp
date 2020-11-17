@@ -9,7 +9,7 @@
 
 #include <string>
 
-#define FILES_OUTPUT_DIR "./output/slice_matches/"
+#define FILES_OUTPUT_DIR "./output/alignment/"
 
 
 class ApproximateSliceMatchesFileFormat {

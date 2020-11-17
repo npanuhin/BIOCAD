@@ -2,9 +2,9 @@
 #include <string>
 
 #include "../tests_maintenance.hpp"
-#include "../../source/suffix_forest/suffix_tree/cache/cacher.hpp"
-#include "../../source/suffix_forest/suffix_tree/cache/cache_extractor.hpp"
-#include "../../source/suffix_forest/suffix_tree/cache/cache_file_format.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/cache/cacher.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/cache/cache_extractor.hpp"
+#include "../../alignment/suffix_forest/suffix_tree/cache/cache_file_format.hpp"
 
 // Do not change definitions to avoid assertions' failures
 #define TEST_STRING "abacaba"

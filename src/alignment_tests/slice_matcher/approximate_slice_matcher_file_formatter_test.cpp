@@ -3,7 +3,7 @@
 //
 
 #include "../tests_maintenance.hpp"
-#include "../../source/slice_matcher/approximate/approximate_slice_matcher.hpp"
+#include "../../alignment/slice_matcher/approximate/approximate_slice_matcher.hpp"
 
 #include <assert.h>
 

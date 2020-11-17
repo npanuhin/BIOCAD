@@ -3,7 +3,7 @@
 #include <iostream>
 
 FastaFileContent::FastaFileContent(std::string filename, bool isInDataDir)
-        : filePath((isInDataDir ? "./data/" : "./") + filename) {
+        : filePath((isInDataDir ? std::string(SAMPLES_DIR) : "./") + filename) {
     std::string line;
     std::ifstream in(this->filePath);
     std::cout << "Name of fasta file extracting : " << this->filePath << std::endl;
