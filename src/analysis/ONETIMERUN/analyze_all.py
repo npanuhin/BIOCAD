@@ -1,12 +1,13 @@
 import os
 from sys import path as sys_path
 
-os.chdir("../../")
+os.chdir("../")
+sys_path.append("./")
 
-sys_path.append(".")
-
-import sam_analyze
+import analysis
 from utils import removePythonCache
+
+ROOT_PATH = "../../"
 
 
 def mkpath(*paths):
@@ -28,14 +29,14 @@ def main():
         "line_min_size": 10
     }
 
-    for foldername in os.listdir(mkpath("tests", "small")):
-        # break
-        sam_analyze.analyze(
+    for foldername in os.listdir(mkpath(ROOT_PATH, "output", "analysis", "small")):
+        break
+        analysis.analyze(
             query_genome_path="samples/small/source.fasta",
             ref_genome_path="samples/small/{}.fasta".format(foldername),
             sam_file_path="BWA/small/{}/bwa_output.sam".format(foldername),
             show_plot=False,
-            output_folder="tests/small/{}".format(foldername),
+            output_folder="output/analysis/small/{}".format(foldername),
             settings=SETTINGS.copy()
         )
 
@@ -53,24 +54,24 @@ def main():
         "line_min_size": "$min_event_size"
     }
 
-    for foldername in os.listdir("tests"):
-        if not os.path.isdir(mkpath("tests", foldername)) or foldername.strip("/").strip("\\") == "small":
+    for foldername in os.listdir(mkpath(ROOT_PATH, "output", "analysis")):
+        if not os.path.isdir(mkpath(ROOT_PATH, "output", "analysis", foldername)) or foldername.strip("/").strip("\\") == "small":
             continue
 
         # if foldername.strip("/").strip("\\") != "large06":
         #     continue
 
-        sam_analyze.analyze(
+        analysis.analyze(
             query_genome_path="samples/{}/large_genome1.fasta".format(foldername),
             ref_genome_path="samples/{}/large_genome2.fasta".format(foldername),
             sam_file_path="BWA/{}/bwa_output.sam".format(foldername),
             show_plot=False,
-            output_folder="tests/{}".format(foldername),
+            output_folder="output/analysis/{}".format(foldername),
             settings=SETTINGS.copy()
         )
 
 
 if __name__ == "__main__":
-    removePythonCache("./")
+    removePythonCache()
     main()
-    removePythonCache("./")
+    removePythonCache()

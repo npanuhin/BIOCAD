@@ -10,7 +10,7 @@ def mkpath(*paths):
     return os_normpath(os_join(*paths))
 
 
-def removePythonCache(root):
+def removePythonCache(root="./"):
     for cur_path, folders, files in os_walk(root):
         for folder in folders:
             if folder == "__pycache__":

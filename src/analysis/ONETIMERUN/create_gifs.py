@@ -1,6 +1,8 @@
 from subprocess import Popen, PIPE
 import os
 
+ROOT_PATH = "../../../"
+
 
 def createGif(path_in, path_out, delay=50, resize=0.3):
     s = Popen(
@@ -26,7 +28,8 @@ def main():
     os.chdir("../")
 
 
-os.chdir("../tests/")
+os.chdir(ROOT_PATH)
+os.chdir("output/analysis")
 
 for foldername in os.listdir():
     if not os.path.isdir(foldername):

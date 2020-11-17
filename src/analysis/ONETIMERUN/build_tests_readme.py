@@ -1,8 +1,10 @@
 import os
 
+ROOT_PATH = "../../../"
+
 
 def buildTests():
-    os.chdir("tests")
+    os.chdir("output/analysis")
 
     with open("README.md", 'w', encoding="utf-8") as readme:
         print("<h1 align=\"center\">Tests</h1>\n", file=readme)
@@ -35,7 +37,7 @@ def buildTests():
         for line in table:
             print("|".join(line), file=readme)
 
-    os.chdir("../")
+    os.chdir("../../")
 
 
 def main(root_path):
@@ -46,4 +48,4 @@ def main(root_path):
 
 
 if __name__ == "__main__":
-    main("../../")
+    main(ROOT_PATH)

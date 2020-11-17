@@ -5,16 +5,13 @@ from json import load as json_load  # , dump as json_dump
 from copy import deepcopy
 import os
 
-import sys
-sys.path.append("src")
 from utils import mkpath, prtNum, distance2, linearApproxDots, linearApproxLines, YCoordOnLine, setSettings, removePythonCache
 
 from Line import Line, shiftLines
 from Plot import Plot
 from Events import Rotation, Insertion, Deletion, Translocation, Duplication, Pass
 
-
-CIGAR_FLAGS_PATH = mkpath("src", "STORAGE", "CIGAR_FLAGS.json")
+ROOT_PATH = "../../"
 
 
 # INT_MAX = int(1e9) + 7
@@ -53,9 +50,6 @@ SETTINGS = {
     "line_min_size": "$min_event_size"
 }
 
-with open(CIGAR_FALGS_PATH, 'r', encoding="utf-8") as file:
-    CIGAR_FLAGS = json_load(file, encoding="utf-8")
-
 
 # /-----TESTING SETTINGS-----\ #
 
@@ -63,7 +57,7 @@ query_genome_path = "samples/large02/large_genome1.fasta"
 ref_genome_path = "samples/large02/large_genome2.fasta"
 sam_file_path = "BWA/large02/bwa_output.sam"
 show_plot = True
-output_folder = "tests/large02"
+output_folder = "output/analysis/large02"
 
 # query_genome_path = "samples/small/source.fasta"
 # ref_genome_path = "samples/small/duplication.fasta"
@@ -79,17 +73,22 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
 
     setSettings(settings, mkpath(output_folder, "settings.json"))
 
-    with open(query_genome_path, 'r', encoding="utf-8") as file:
+    with open(mkpath(ROOT_PATH, "src", "analysis", "STORAGE", "CIGAR_FLAGS.json"), 'r', encoding="utf-8") as file:
+        CIGAR_FLAGS = json_load(file, encoding="utf-8")
+
+    with open(mkpath(ROOT_PATH, query_genome_path), 'r', encoding="utf-8") as file:
         for name, sequence in SimpleFastaParser(file):
             query_genome_name = name
             query_genome_length = len(sequence)
             break
 
-    with open(ref_genome_path, 'r', encoding="utf-8") as file:
+    with open(mkpath(ROOT_PATH, ref_genome_path), 'r', encoding="utf-8") as file:
         for name, sequence in SimpleFastaParser(file):
             ref_genome_name = name
             ref_genome_length = len(sequence)
             break
+
+    output_folder = mkpath(ROOT_PATH, output_folder)
 
     print("Query: {} [{}]".format(query_genome_name, prtNum(query_genome_length)))
     print("Reference: {} [{}]\n".format(ref_genome_name, prtNum(ref_genome_length)))
@@ -100,7 +99,7 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
     print("Reading SAM file...")
 
     segments = []
-    with open(sam_file_path, 'r', encoding="utf-8") as sam_file:
+    with open(mkpath(ROOT_PATH, sam_file_path), 'r', encoding="utf-8") as sam_file:
         for line in (line.strip().split() for line in sam_file if not line.strip().startswith("@")):
             # Quality:
             # mapQ = int(line[4])
@@ -665,6 +664,6 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
 
 
 if __name__ == "__main__":
-    removePythonCache("./")
+    removePythonCache(ROOT_PATH)
     analyze(query_genome_path, ref_genome_path, sam_file_path, show_plot, output_folder, SETTINGS)
-    removePythonCache("./")
+    removePythonCache(ROOT_PATH)
