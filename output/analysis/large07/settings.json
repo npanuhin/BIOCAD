@@ -1,0 +1,4 @@
+{
+	"min_event_size": 2e5, 
+	"lines_join_size": 3e5
+}
