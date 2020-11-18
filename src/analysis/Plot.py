@@ -3,6 +3,8 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Polygon
 # from matplotlib.patches import ConnectionStyle
 
+PLOT_DPI = 200
+
 
 class Plot:
     def __init__(self, title, fontsize, grid_size=None, figsize=None, nameX=None, nameY=None):
@@ -73,8 +75,8 @@ class Plot:
         # self.ax.relim()
         self.ax.autoscale_view()
 
-    def save(self, path, *args, **kwargs):
-        self.fig.savefig(path, dpi=400, *args, **kwargs)
+    def save(self, path, dpi=PLOT_DPI, *args, **kwargs):
+        self.fig.savefig(path, dpi=dpi, *args, **kwargs)
 
     def clear(self):
         for artist in self.ax.lines + self.ax.collections + self.ax.patches:

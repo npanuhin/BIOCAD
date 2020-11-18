@@ -2,28 +2,7 @@
 
 > Currently, this repository is not intended to represent work, but rather to store and transmit data.
 
-## Analysis status
-
-<h3 align="center"><a href="https://github.com/npanuhin/BIOCAD/blob/master/output/analysis/README.md">View current test results</a></h3>
-
-✅ - Works as intended
-⚠ - There are problems, but the solution is possible
-❌ - There are problems that make the solution wrong
-
-- ✅ large01
-- ✅ large02
-- ✅ large03
-- ✅ large04
-- ✅ large05
-- ✅ large06
-- ✅ large07
-- ⚠ large08
-- ✅ large09
-- ⚠ large10
-- ✅ large11
-- ❌ large12
-- ✅ small (BWA⚠)
-
+[View current test results](https://github.com/npanuhin/BIOCAD/blob/master/output/analysis/README.md)
 
 ## Probably useful
 * [Web-site](https://www.ncbi.nlm.nih.gov/) with cut off genomes ([https://www.ncbi.nlm.nih.gov/](https://www.ncbi.nlm.nih.gov/))

@@ -5,6 +5,8 @@ from shutil import rmtree
 # from threading import Thread, Lock
 # from functools import wraps
 
+ENDL = '\n'
+
 
 def mkpath(*paths):
     return os_normpath(os_join(*paths))
@@ -80,6 +82,19 @@ def setSettings(settings, alternative_settings_path=None):
                 break
         else:
             break
+
+
+def fastDrawLines(plot, lines, output_path=None, show=False):
+    for line in lines:
+        plot.plotLine(line)
+
+    if output_path is not None:
+        plot.save(output_path)
+
+    if show:
+        plot.show()
+
+    plot.clear()
 
 
 # def threded():

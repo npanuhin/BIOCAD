@@ -5,7 +5,7 @@ from json import load as json_load  # , dump as json_dump
 from copy import deepcopy
 import os
 
-from utils import mkpath, prtNum, distance2, linearApproxDots, linearApproxLines, YCoordOnLine, setSettings, removePythonCache
+from utils import *
 
 from Line import Line, shiftLines
 from Plot import Plot
@@ -71,6 +71,8 @@ output_folder = "output/analysis/large02"
 def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, show_plot: bool, output_folder: str, settings: dict):
     print("---| {} |---".format(output_folder))
 
+    output_folder = mkpath(ROOT_PATH, output_folder)
+
     setSettings(settings, mkpath(output_folder, "settings.json"))
 
     with open(mkpath(ROOT_PATH, "src", "analysis", "STORAGE", "CIGAR_FLAGS.json"), 'r', encoding="utf-8") as file:
@@ -87,8 +89,6 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
             ref_genome_name = name
             ref_genome_length = len(sequence)
             break
-
-    output_folder = mkpath(ROOT_PATH, output_folder)
 
     print("Query: {} [{}]".format(query_genome_name, prtNum(query_genome_length)))
     print("Reference: {} [{}]\n".format(ref_genome_name, prtNum(ref_genome_length)))
@@ -230,6 +230,8 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
     # Shift and rotations
     print("Counting shift and rotations...")
 
+    not_shited_lines = deepcopy(lines)
+
     def countMetric(lines):
         result = 0
 
@@ -269,7 +271,7 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
         for line_index in range(rotation.start_line, rotation.end_line + 1):
             lines[line_index].rotateY(rotation_center)
 
-        result = countMetric(lines)
+        metric_value = countMetric(lines)
 
         if not apply_rotation:
             for line_index in range(rotation.start_line, rotation.end_line + 1):
@@ -280,24 +282,21 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
             for line_index in range(rotation.start_line, rotation.end_line + 1):
                 lines[line_index].rotateY(rotation_center, line=False, dots=True)
 
-        return result
+        return metric_value
 
     def countBestRotations(rotated_lines) -> List[Line]:
-        possible_rotations = []
-        for start_line in range(len(rotated_lines)):
-            for end_line in range(start_line, len(rotated_lines)):
-                possible_rotations.append(Rotation(start_line, end_line))
-
+        possible_rotations = [
+            Rotation(start_line, end_line)
+            for start_line in range(len(rotated_lines))
+            for end_line in range(start_line, len(rotated_lines))
+        ]
         # print("\nPossible rotations:", *possible_rotations, sep='\n')
 
         cur_metric_value = countMetric(rotated_lines)
         rotation_actions = []
 
         # if draw:
-        #     for line in rotated_lines:
-        #         plot.plotLine(line)
-        #     plot.save(mkpath(output_folder, "history", "x0.png"))
-        #     plot.clear()
+        #     fastDrawLines(plot, rotated_lines, save=mkpath(output_folder, "history", "x0.png"))
         #     index = 1
 
         while True:
@@ -305,7 +304,6 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
             best_rotation_index = 0
 
             for i, rotation in enumerate(possible_rotations):
-
                 # TODO: WORKAROUND #1
                 min_line_center, max_line_center = float('inf'), float("-inf")
                 for line_index in range(rotation.start_line, rotation.end_line + 1):
@@ -332,35 +330,26 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
             if best_metric_value >= cur_metric_value:
                 break
 
-            print("\n{} -> {}".format(possible_rotations[best_rotation_index], cur_metric_value))
-
             cur_metric_value = countMetricWithRotation(rotated_lines, possible_rotations[best_rotation_index], apply_rotation=True)
 
+            # print("\n{} -> {}".format(possible_rotations[best_rotation_index], cur_metric_value))
             # print("best_metric_value = {}".format(best_metric_value))
             # print("best_rotation_index = {}".format(best_rotation_index))
 
             rotation_actions.append(possible_rotations[best_rotation_index])
 
             # if draw:
-            #     for line in rotated_lines:
-            #         plot.plotLine(line)
-            #     plot.save(mkpath(output_folder, "history", "x{}.png".format(index)))
-            #     plot.clear()
-            #     index += 1
+            #     fastDrawLines(plot, rotated_lines, save=mkpath(output_folder, "history", "x{}.png".format(index)))
 
         # print("Final metric value: ", cur_metric_value, countMetric(rotated_lines))
         print("\nRotation actions:", *rotation_actions, sep='\n')
         # print("\nRotated lines:", *rotated_lines, sep='\n')
 
-        # plot.clear()
-        # for line in rotated_lines:
-        #     plot.plotLine(line)
-        # plot.show()
-        # plot.clear()
+        # fastDrawLines(plot, rotated_lines, show=True)
 
         return cur_metric_value, rotated_lines, rotation_actions
 
-    def countShift(lines, start_line, apply_changes=False) -> int:
+    def countShift(lines, start_line, apply_shift=False) -> int:
         d_x = lines[start_line].start_x
 
         for line_index in range(start_line, len(lines)):
@@ -372,15 +361,13 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
         # print("\nLines:", *lines, sep='\n')
 
         rotated_lines = shiftLines(deepcopy(lines), start_line)
-
-        # print("\nLines:", *lines, sep='\n')
         # print("\nRotated lines:", *rotated_lines, sep='\n')
 
         metric_value, rotated_lines, rotation_actions = countBestRotations(rotated_lines)
 
         print("metric_value = {} or {}".format(metric_value, metric_value * len(rotation_actions)))
 
-        if apply_changes:
+        if apply_shift:
             return shiftLines(lines, start_line), rotated_lines, rotation_actions
 
         for line_index in range(start_line, len(lines)):
@@ -396,7 +383,6 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
 
     for start_line in range(len(lines)):
         print("\n-| Counting for start_line = {}...".format(start_line))
-
         cur_metric_value = countShift(lines, start_line)
 
         if cur_metric_value < best_metric_value:
@@ -404,7 +390,7 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
             best_metric_value_start_line = start_line
 
     print("\n===| Counting end result with start_line = {}...".format(best_metric_value_start_line))
-    lines, rotated_lines, rotation_actions = countShift(lines, best_metric_value_start_line, apply_changes=True)
+    lines, rotated_lines, rotation_actions = countShift(lines, best_metric_value_start_line, apply_shift=True)
 
     # plot.clear()
     # for line in lines:
@@ -487,6 +473,9 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
     for line in rotated_lines:
         plot.plotLine(line)
 
+    for line in not_shited_lines:
+        plot.scatter(line.dots[::settings["dot_skip_rate"]], dotsize=settings["dotsize"], color="#eee")
+
     # dots = []  # Optional compress
     # for x in range(0, len(graph), settings["dot_skip_rate"]):
     #     dots += ([x, y] for y in graph[x])
@@ -516,46 +505,49 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
 
     large_actions = [Pass()] + rotation_actions + large_actions
 
-    with open(mkpath(output_folder, "history.txt"), 'w', encoding="utf-8") as history_file:
-        for action in large_actions:
+    history_text_output = []
 
-            if isinstance(action, Rotation):
-                print("Rotation from {} (Query) to {} (Query)\n".format(
-                    prtNum(int(lines[action.start_line].start_x)),
-                    prtNum(int(lines[action.end_line].end_x))
-                ), file=history_file)
+    for action in large_actions:
 
-            elif isinstance(action, Deletion):
-                print("Deletion of {}-{} (Query) from {} (Ref)\n".format(
-                    prtNum(int(action.start_x)),
-                    prtNum(int(action.start_x + action.length)),
-                    prtNum(int(action.start_y))
-                ), file=history_file)
+        if isinstance(action, Rotation):
+            history_text_output.append("Rotation from {} (Query) to {} (Query)".format(
+                prtNum(int(lines[action.start_line].start_x)),
+                prtNum(int(lines[action.end_line].end_x))
+            ))
 
-            elif isinstance(action, Insertion):
-                print("Insertion of {}-{} (Ref) to {} (Query)\n".format(
-                    prtNum(int(action.start_y)),
-                    prtNum(int(action.start_y + action.height)),
-                    prtNum(int(action.start_x))
-                ), file=history_file)
+        elif isinstance(action, Deletion):
+            history_text_output.append("Deletion of {}-{} (Query) from {} (Ref)".format(
+                prtNum(int(action.start_x)),
+                prtNum(int(action.start_x + action.length)),
+                prtNum(int(action.start_y))
+            ))
 
-            elif isinstance(action, Translocation):
-                print("Translocation of {}-END (Query) from {} (Ref) to {} (Ref)\n".format(
-                    prtNum(int(action.start_x)),
-                    prtNum(int(action.start_y - action.height)),
-                    prtNum(int(action.start_y))
-                ), file=history_file)
+        elif isinstance(action, Insertion):
+            history_text_output.append("Insertion of {}-{} (Ref) to {} (Query)".format(
+                prtNum(int(action.start_y)),
+                prtNum(int(action.start_y + action.height)),
+                prtNum(int(action.start_x))
+            ))
 
-            elif isinstance(action, Duplication):
-                print("Duplication of {}-{} (Query) {}-{} (Ref)\n".format(
-                    prtNum(int(action.start_x)),
-                    prtNum(int(action.start_x + action.length)),
-                    prtNum(int(action.start_y)),
-                    prtNum(int(action.start_y + action.height))
-                ), file=history_file)
+        elif isinstance(action, Translocation):
+            history_text_output.append("Translocation of {}-END (Query) from {} (Ref) to {} (Ref)".format(
+                prtNum(int(action.start_x)),
+                prtNum(int(action.start_y - action.height)),
+                prtNum(int(action.start_y))
+            ))
+
+        elif isinstance(action, Duplication):
+            history_text_output.append("Duplication of {}-{} (Query) {}-{} (Ref)".format(
+                prtNum(int(action.start_x)),
+                prtNum(int(action.start_x + action.length)),
+                prtNum(int(action.start_y)),
+                prtNum(int(action.start_y + action.height))
+            ))
+
+    with open(mkpath(output_folder, "history.txt"), 'w', encoding="utf-8") as file:
+        file.write('\n\n'.join(history_text_output) + '\n')
 
     print(" {} images\n".format(len(large_actions)))
-
     # print("Large actions:", *large_actions, sep='\n')
 
     for action_index, action in enumerate(large_actions):
@@ -636,6 +628,8 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
             for line in rotated_lines:
                 for dot_x, dot_y in line.dots:
                     bottom = min(bottom, dot_y)
+            if bottom == float('inf'):
+                bottom = 0
 
             for line in rotated_lines:
                 line.shift(dy=-bottom)
