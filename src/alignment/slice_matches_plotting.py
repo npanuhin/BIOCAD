@@ -1,12 +1,13 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath("./src/analysis/"))
+sys.path.insert(0, os.path.abspath("../analysis/"))
 
 from Plot import Plot
+from utils import removePythonCache
 import os
 
-RELATIVE_PATH_TO_SLICE_MATCHES_DIR = './output/alignment/'
+RELATIVE_PATH_TO_SLICE_MATCHES_DIR = '../../output/alignment/'
 
 
 def ask_file_name():
@@ -71,6 +72,10 @@ def make_plot(slice_matches_file_path):
 
 
 if __name__ == "__main__":
+    removePythonCache("../../")
+
     needed_file_name = ask_file_name()
     file_path = get_path(needed_file_name)
     make_plot(file_path)
+
+    removePythonCache("../../")
