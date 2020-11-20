@@ -1,2 +1,8 @@
+# Exclude filters:
 /.idea
 /BWA
+/cache/analysis/*
+
+
+# Include filters:
+!*.gitkeep
