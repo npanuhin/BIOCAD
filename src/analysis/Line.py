@@ -53,6 +53,14 @@ class Line:
     def center_y(self):
         return (self.start_y + self.end_y) // 2
 
+    @property
+    def sizeX(self):
+        return abs(self.start_x - self.end_x)
+
+    @property
+    def sizeY(self):
+        return abs(self.start_y - self.end_y)
+
     def isTiltedCorrectly(self):
         return self.start_y <= self.end_y
 
@@ -75,6 +83,7 @@ class Line:
         for i in range(len(self.dots)):
             self.dots[i][0] += dx
             self.dots[i][1] += dy
+        return self
 
     def rotateY(self, rotation_center, line=True, dots=False):
         if line:
@@ -84,6 +93,7 @@ class Line:
         if dots:
             for i in range(len(self.dots)):
                 self.dots[i][1] -= (self.dots[i][1] - rotation_center) * 2
+        return self
 
 
 def shiftLines(lines, count) -> List[Line]:

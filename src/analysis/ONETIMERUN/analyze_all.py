@@ -30,7 +30,6 @@ def main():
     }
 
     for foldername in os.listdir(mkpath(ROOT_PATH, "output", "analysis", "small")):
-        break
         analysis.analyze(
             query_genome_path="samples/small/source.fasta",
             ref_genome_path="samples/small/{}.fasta".format(foldername),
@@ -58,8 +57,8 @@ def main():
         if not os.path.isdir(mkpath(ROOT_PATH, "output", "analysis", foldername)) or foldername.strip("/").strip("\\") == "small":
             continue
 
-        # if foldername.strip("/").strip("\\") != "large06":
-        #     continue
+        if foldername.strip("/").strip("\\") == "large12":
+            continue
 
         analysis.analyze(
             query_genome_path="samples/{}/large_genome1.fasta".format(foldername),
