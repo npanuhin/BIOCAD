@@ -1,6 +1,5 @@
 Rotation from 224'720 (Query) to 1'048'720 (Query)
 
-Deletion of 519'380-589'540 (Query) from 486'347 (Ref)
+Deletion of 519'380-589'540 (Query)
 
-Deletion of 387'930-413'080 (Query) from 380'031 (Ref)
-
+Deletion of 387'930-413'080 (Query)

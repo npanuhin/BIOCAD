@@ -1,2 +1,1 @@
-Deletion of 499-530 (Query) from 499 (Ref)
-
+Deletion of 499-530 (Query)

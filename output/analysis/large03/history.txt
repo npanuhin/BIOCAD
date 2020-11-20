@@ -1,12 +1,9 @@
 Rotation from 196'890 (Query) to 920'030 (Query)
 
-Insertion of 1'069'396-1'267'031 (Ref) to 1'030'830 (Query)
+Insertion of 1'069'396-1'267'031 (Ref)
 
-Insertion of 746'476-770'877 (Ref) to 758'560 (Query)
+Insertion of 746'476-770'877 (Ref)
 
-Insertion of 812'323-830'371 (Ref) to 799'950 (Query)
+Insertion of 812'323-830'371 (Ref)
 
-Deletion of 559'140-572'660 (Query) from 558'027 (Ref)
-
-Duplication of 1'030'830-1'037'070 (Query) 1'063'134-1'069'396 (Ref)
-
+Deletion of 559'140-572'660 (Query)

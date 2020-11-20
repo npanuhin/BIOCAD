@@ -4,7 +4,6 @@ Rotation from 822'800 (Query) to 3'741'770 (Query)
 
 Rotation from 1'428'420 (Query) to 2'708'180 (Query)
 
-Insertion of 2'472'089-2'810'227 (Ref) to 1'895'260 (Query)
+Insertion of 2'472'089-2'810'227 (Ref)
 
-Deletion of 1'895'260-2'182'540 (Query) from 2'472'089 (Ref)
-
+Deletion of 1'895'260-2'182'540 (Query)
