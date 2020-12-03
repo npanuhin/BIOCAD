@@ -1,3 +1,6 @@
+# Cache
+__pycache__
+
 # Exclude filters:
 /.idea
 /BWA
