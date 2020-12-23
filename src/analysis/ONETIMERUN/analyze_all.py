@@ -18,7 +18,7 @@ def main():
     # Small
     SETTINGS = {
         "grid_size": 100,
-        "min_rid_size": 1,
+        "min_block_size": 1,
         "dot_skip_rate": 1,
         "dotsize": 0.1,
         "fontsize": 10,
@@ -33,7 +33,7 @@ def main():
         analysis.analyze(
             query_genome_path="samples/small/source.fasta",
             ref_genome_path="samples/small/{}.fasta".format(foldername),
-            sam_file_path="BWA/small/{}/bwa_output.sam".format(foldername),
+            segments_file_path="BWA/small/{}/bwa_output.sam".format(foldername),
             show_plot=False,
             output_folder="output/analysis/small/{}".format(foldername),
             settings=SETTINGS.copy()
@@ -42,13 +42,13 @@ def main():
     # Large
     SETTINGS = {
         "grid_size": int(1e5),
-        "min_rid_size": int(1e3),
+        "min_block_size": int(1e3),
         "dot_skip_rate": 10,
         "dotsize": 0.1,
         "fontsize": 8,
         "figsize": (10, 7),
 
-        "min_event_size": int(5e3),
+        "min_event_size": int(1e4),
         "lines_join_size": "$min_event_size + 3",
         "line_min_size": "$min_event_size"
     }
@@ -63,7 +63,7 @@ def main():
         analysis.analyze(
             query_genome_path="samples/{}/large_genome1.fasta".format(foldername),
             ref_genome_path="samples/{}/large_genome2.fasta".format(foldername),
-            sam_file_path="BWA/{}/bwa_output.sam".format(foldername),
+            segments_file_path="BWA/{}/bwa_output.sam".format(foldername),
             show_plot=False,
             output_folder="output/analysis/{}".format(foldername),
             settings=SETTINGS.copy()

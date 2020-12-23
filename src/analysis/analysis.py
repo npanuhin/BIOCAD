@@ -18,6 +18,7 @@ ROOT_PATH = "../../"
 
 # TODO:
 # - Left bottom
+# - Remove block size from parsing SAM files
 
 
 # !!! X - query, Y - ref !!!
@@ -25,7 +26,7 @@ ROOT_PATH = "../../"
 # Small
 # SETTINGS = {
 #     "grid_size": 100,
-#     "min_rid_size": 1,
+#     "min_block_size": 1,
 #     "dot_skip_rate": 1,
 #     "dotsize": 0.1,
 #     "fontsize": 10,
@@ -39,13 +40,13 @@ ROOT_PATH = "../../"
 # Large
 SETTINGS = {
     "grid_size": int(1e5),
-    "min_rid_size": int(1e3),
+    "min_block_size": int(1e3),
     "dot_skip_rate": 10,
     "dotsize": 0.1,
     "fontsize": 8,
     "figsize": (10, 7),
 
-    "min_event_size": int(5e3),
+    "min_event_size": int(1e4),
     "lines_join_size": "$min_event_size + 3",
     "line_min_size": "$min_event_size"
 }
@@ -53,22 +54,136 @@ SETTINGS = {
 
 # /-----TESTING SETTINGS-----\ #
 
-query_genome_path = "samples/large08/large_genome1.fasta"
-ref_genome_path = "samples/large08/large_genome2.fasta"
-sam_file_path = "BWA/large08/bwa_output.sam"
+query_genome_path = "samples/large03/large_genome1.fasta"
+ref_genome_path = "samples/large03/large_genome2.fasta"
+# segments_file_path = "BWA/large03/bwa_output.sam"
+segments_file_path = "output/alignment/large2_70.txt"
 show_plot = True
-output_folder = "output/analysis/large08"
+output_folder = "output/analysis/large03"
 
 # query_genome_path = "samples/small/source.fasta"
 # ref_genome_path = "samples/small/duplication.fasta"
-# sam_file_path = "BWA/small/duplication/bwa_output.sam"
+# segments_file_path = "BWA/small/duplication/bwa_output.sam"
 # show_plot = True
 # output_folder = "tests/small/duplication"
 
 # \-----TESTING SETTINGS-----/ #
 
 
-def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, show_plot: bool, output_folder: str, settings: dict):
+def read_dots_from_sam(path, settings, CIGAR_FLAGS, query_genome_length, ref_genome_length):
+    segments = []  # [cur_query_pos, cur_ref_pos, length, rotated]
+
+    with open(path, 'r', encoding="utf-8") as sam_file:
+        for line in (line.strip().split() for line in sam_file if not line.lstrip().startswith('@') and line.strip()):
+            # Quality:
+            # mapQ = int(line[4])
+            # quality = round((10 ** (mapQ / -10)) * 100, 6)
+
+            # Flags:
+            flags_bit = int(line[1])
+            flags = set()
+            for i in range(len(CIGAR_FLAGS) - 1, -1, -1):
+                cur_flag, flags_bit = divmod(flags_bit, 2 ** i)
+                if cur_flag:
+                    flags.add(i)
+
+            # Rid:
+            block_size = len(line[9])
+            if block_size <= settings["min_block_size"]:
+                continue
+
+            # CIGAR:
+            actions = []
+            buff = ""
+            for char in line[5]:
+                if char in ascii_uppercase:
+                    actions.append([int(buff), char])
+                    buff = ""
+                else:
+                    buff += char
+
+            # rotated = lambda ref_pos: ref_genome_length - ref_pos if 4 in flags else ref_pos
+
+            # Start position:
+            cur_query_pos = int(line[3])
+            cur_ref_pos = 0
+
+            for length, action_type in actions:
+
+                if action_type in ('S', 'H'):
+                    cur_ref_pos += length
+
+                elif action_type == 'M':
+                    segments.append([cur_query_pos, cur_ref_pos, length, (4 in flags)])
+                    cur_query_pos += length
+                    cur_ref_pos += length
+
+                elif action_type == 'I':
+                    cur_ref_pos += length
+
+                elif action_type == 'D':
+                    cur_query_pos += length
+
+    # Creating dots
+    print("Creating dots...", end="")
+
+    graph = [[] for _ in range(query_genome_length + 1)]
+    count = 0
+
+    for cur_query_pos, cur_ref_pos, length, rotated in segments:
+        if rotated:
+            cur_ref_pos = ref_genome_length - cur_ref_pos
+        for _ in range(length):
+            graph[cur_query_pos].append(cur_ref_pos)
+            cur_query_pos += 1
+            cur_ref_pos += (-1 if rotated else 1)
+
+        count += length
+
+    del segments
+
+    print(" {}".format(prtNum(count)))  # Can be with optional compress: count // N
+
+    return graph
+
+
+def read_dots_from_alignment(path, query_genome_length):
+    graph = [[] for _ in range(query_genome_length + 1)]
+
+    print("Creating dots...", end="")
+
+    count = 0
+    with open(path, 'r', encoding="utf-8") as segments_file:
+        for line in (line.strip() for line in segments_file if not line.lstrip().startswith('>') and line.strip()):
+            block, positions = map(str.strip, line.split(':'))
+
+            query_positions, target_positions = map(str.strip, positions.split(';'))
+
+            query_positions = list(map(int, query_positions.split(',')))
+            target_positions = list(map(int, target_positions.split(',')))
+
+            for query_pos in query_positions:
+                if query_pos >= 0:
+                    for target_pos in target_positions:
+                        for i in range(len(block)):
+                            graph[query_pos + i].append(target_pos + i)
+
+                        count += len(block)
+
+                else:
+                    query_pos = abs(query_pos)
+                    for target_pos in target_positions:
+                        for i in range(len(block)):
+                            graph[query_pos + i].append(target_pos + i)
+
+                        count += len(block)
+
+    print(" {}".format(prtNum(count)))  # Can be with optional compress: count // N
+
+    return graph
+
+
+def analyze(query_genome_path: str, ref_genome_path: str, segments_file_path: str, show_plot: bool, output_folder: str, settings: dict):
     print("---| {} |---".format(output_folder))
 
     output_folder = mkpath(ROOT_PATH, output_folder)
@@ -93,64 +208,6 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
     print("Query: {} [{}]".format(query_genome_name, prtNum(query_genome_length)))
     print("Reference: {} [{}]\n".format(ref_genome_name, prtNum(ref_genome_length)))
 
-    # return
-# ====================================================================================================================================================================
-    # Parse CIGAR and create a list of all actions
-    print("Reading SAM file...")
-
-    segments = []
-    with open(mkpath(ROOT_PATH, sam_file_path), 'r', encoding="utf-8") as sam_file:
-        for line in (line.strip().split() for line in sam_file if not line.strip().startswith("@")):
-            # Quality:
-            # mapQ = int(line[4])
-            # quality = round((10 ** (mapQ / -10)) * 100, 6)
-
-            # Flags:
-            flags_bit = int(line[1])
-            flags = set()
-            for i in range(len(CIGAR_FLAGS) - 1, -1, -1):
-                cur_flag, flags_bit = divmod(flags_bit, 2 ** i)
-                if cur_flag:
-                    flags.add(i)
-
-            # Rid:
-            rid_size = len(line[9])
-            if rid_size <= settings["min_rid_size"]:
-                continue
-
-            # CIGAR:
-            actions = []
-            buff = ""
-            for char in line[5]:
-                if char in ascii_uppercase:
-                    actions.append([int(buff), char])
-                    buff = ""
-                else:
-                    buff += char
-
-            rotated = lambda ref_pos: ref_genome_length - ref_pos if 4 in flags else ref_pos
-
-            # Start position:
-            cur_query_pos = int(line[3])
-            cur_ref_pos = 0
-
-            for length, action_type in actions:
-
-                if action_type in ('S', 'H'):
-                    cur_ref_pos += length
-
-                elif action_type == 'M':
-                    segments.append([cur_query_pos, cur_ref_pos, length, (4 in flags)])
-                    cur_query_pos += length
-                    cur_ref_pos += length
-
-                elif action_type == 'I':
-                    cur_ref_pos += length
-
-                elif action_type == 'D':
-                    cur_query_pos += length
-
-    # return
 # ====================================================================================================================================================================
     # Creating plot
     print("Creating plot...")
@@ -165,25 +222,15 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
 
     # return
 # ====================================================================================================================================================================
-    # Creating dots
-    print("Creating dots...", end="")
+    # Parse input file and create dots
+    print("Reading input file and creating dots...")
 
-    graph = [[] for _ in range(query_genome_length + 1)]
-    count = 0
+    if os.path.splitext(segments_file_path)[1] == ".sam":
+        graph = read_dots_from_sam(mkpath(ROOT_PATH, segments_file_path), settings, CIGAR_FLAGS, query_genome_length)
 
-    for cur_query_pos, cur_ref_pos, length, rotated in segments:
-        if rotated:
-            cur_ref_pos = ref_genome_length - cur_ref_pos
-        for _ in range(length):
-            graph[cur_query_pos].append(cur_ref_pos)
-            cur_query_pos += 1
-            cur_ref_pos += (-1 if rotated else 1)
-
-        count += length
-
-    del segments
-
-    print(" {}".format(prtNum(count)))  # Can be with optional compress: count // N
+    else:
+        # graph = read_dots_from_sam(mkpath(ROOT_PATH, "BWA/large01/bwa_output.sam"), settings, CIGAR_FLAGS, query_genome_length, ref_genome_length)
+        graph = read_dots_from_alignment(mkpath(ROOT_PATH, segments_file_path), query_genome_length)
 
     # return
 # ====================================================================================================================================================================
@@ -196,6 +243,8 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
     lines = []
 
     for x in range(0, len(graph), settings["dot_skip_rate"]):
+        # if x % 100 == 0:
+        #     print(x, len(lines))
         for y in graph[x]:
             for line in lines:
                 if distance2(x, y, *line.dots[-1]) <= lines_join_size2 and \
@@ -225,12 +274,16 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
     print(" {} lines".format(len(lines)))
     print("Lines:", *lines, sep='\n')
 
+    # for line in lines:
+    #     plot.plotLine(line)
+    # plot.show()
+
     # return
 # ====================================================================================================================================================================
     # Shift and rotations
     print("\nCounting shift and rotations...")
 
-    not_shited_lines = deepcopy(lines)
+    # not_shifted_lines = deepcopy(lines)
 
     def countMetric(lines):
         result = 0
@@ -503,7 +556,7 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
     for line in spaceless_lines:
         plot.plotLine(line, color="#0ff")
 
-    # for line in not_shited_lines:
+    # for line in not_shifted_lines:
     #     plot.scatter(line.dots[::settings["dot_skip_rate"]], dotsize=settings["dotsize"], color="#eee")
 
     print("Saving plot...")
@@ -689,5 +742,5 @@ def analyze(query_genome_path: str, ref_genome_path: str, sam_file_path: str, sh
 
 if __name__ == "__main__":
     removePythonCache(ROOT_PATH)
-    analyze(query_genome_path, ref_genome_path, sam_file_path, show_plot, output_folder, SETTINGS)
+    analyze(query_genome_path, ref_genome_path, segments_file_path, show_plot, output_folder, SETTINGS)
     removePythonCache(ROOT_PATH)
