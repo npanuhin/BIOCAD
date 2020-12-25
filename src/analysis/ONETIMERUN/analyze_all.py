@@ -29,15 +29,16 @@ def main():
         "line_min_size": 10
     }
 
-    for foldername in os.listdir(mkpath(ROOT_PATH, "output", "analysis", "small")):
-        analysis.analyze(
-            query_genome_path="samples/small/source.fasta",
-            ref_genome_path="samples/small/{}.fasta".format(foldername),
-            segments_file_path="BWA/small/{}/bwa_output.sam".format(foldername),
-            show_plot=False,
-            output_folder="output/analysis/small/{}".format(foldername),
-            settings=SETTINGS.copy()
-        )
+    # for foldername in os.listdir(mkpath(ROOT_PATH, "output", "analysis", "small")):
+    #     analysis.analyze(
+    #         name=foldername,
+    #         query_genome_path="samples/small/source.fasta",
+    #         ref_genome_path="samples/small/{}.fasta".format(foldername),
+    #         segments_file_path="BWA/small/{}/bwa_output.sam".format(foldername),
+    #         show_plot=False,
+    #         output_folder="output/analysis/small/{}".format(foldername),
+    #         settings=SETTINGS.copy()
+    #     )
 
     # Large
     SETTINGS = {
@@ -57,13 +58,15 @@ def main():
         if not os.path.isdir(mkpath(ROOT_PATH, "output", "analysis", foldername)) or foldername.strip("/").strip("\\") == "small":
             continue
 
-        if foldername.strip("/").strip("\\") == "large12":
+        if int(foldername.strip("/").strip("\\").lstrip("large")) > 7:
             continue
 
         analysis.analyze(
+            name=foldername,
             query_genome_path="samples/{}/large_genome1.fasta".format(foldername),
             ref_genome_path="samples/{}/large_genome2.fasta".format(foldername),
-            segments_file_path="BWA/{}/bwa_output.sam".format(foldername),
+            # segments_file_path="BWA/{}/bwa_output.sam".format(foldername),
+            segments_file_path="{}".format(analysis.segment_paths[foldername]),
             show_plot=False,
             output_folder="output/analysis/{}".format(foldername),
             settings=SETTINGS.copy()

@@ -51,15 +51,27 @@ SETTINGS = {
     "line_min_size": "$min_event_size"
 }
 
+INPUT = "large06"
+
+segment_paths = {
+    "large01": "output/alignment/large1_75.txt",
+    "large02": "output/alignment/large2_100.txt",
+    "large03": "output/alignment/large3_75.txt",
+    "large04": "output/alignment/large4_100.txt",
+    "large05": "output/alignment/large5_25.txt",
+    "large06": "output/alignment/large6_25.txt",
+    "large07": "output/alignment/large7_100.txt"
+}
+
 
 # /-----TESTING SETTINGS-----\ #
 
-query_genome_path = "samples/large03/large_genome1.fasta"
-ref_genome_path = "samples/large03/large_genome2.fasta"
-# segments_file_path = "BWA/large03/bwa_output.sam"
-segments_file_path = "output/alignment/large2_70.txt"
+query_genome_path = "samples/{}/large_genome1.fasta".format(INPUT)
+ref_genome_path = "samples/{}/large_genome2.fasta".format(INPUT)
+# segments_file_path = "BWA/{}/bwa_output.sam"
+segments_file_path = "{}".format(segment_paths[INPUT])
 show_plot = True
-output_folder = "output/analysis/large03"
+output_folder = "output/analysis/{}".format(INPUT)
 
 # query_genome_path = "samples/small/source.fasta"
 # ref_genome_path = "samples/small/duplication.fasta"
@@ -183,8 +195,8 @@ def read_dots_from_alignment(path, query_genome_length):
     return graph
 
 
-def analyze(query_genome_path: str, ref_genome_path: str, segments_file_path: str, show_plot: bool, output_folder: str, settings: dict):
-    print("---| {} |---".format(output_folder))
+def analyze(name: str, query_genome_path: str, ref_genome_path: str, segments_file_path: str, show_plot: bool, output_folder: str, settings: dict):
+    print("---| {} |---".format(name))
 
     output_folder = mkpath(ROOT_PATH, output_folder)
 
@@ -226,7 +238,7 @@ def analyze(query_genome_path: str, ref_genome_path: str, segments_file_path: st
     print("Reading input file and creating dots...")
 
     if os.path.splitext(segments_file_path)[1] == ".sam":
-        graph = read_dots_from_sam(mkpath(ROOT_PATH, segments_file_path), settings, CIGAR_FLAGS, query_genome_length)
+        graph = read_dots_from_sam(mkpath(ROOT_PATH, segments_file_path), settings, CIGAR_FLAGS, query_genome_length, ref_genome_length)
 
     else:
         # graph = read_dots_from_sam(mkpath(ROOT_PATH, "BWA/large01/bwa_output.sam"), settings, CIGAR_FLAGS, query_genome_length, ref_genome_length)
@@ -643,7 +655,8 @@ def analyze(query_genome_path: str, ref_genome_path: str, segments_file_path: st
 
             for i in range(action_index + 1, len(large_actions)):
                 if isinstance(large_actions[i], Insertion):
-                    large_actions[i].start_y -= action.height
+                    if large_actions[i].start_y > action.start_y:
+                        large_actions[i].start_y -= action.height
 
         elif isinstance(action, Deletion):
             for line in rotated_lines:
@@ -656,7 +669,8 @@ def analyze(query_genome_path: str, ref_genome_path: str, segments_file_path: st
 
             for i in range(action_index + 1, len(large_actions)):
                 if isinstance(large_actions[i], Deletion):
-                    large_actions[i].start_x -= action.length
+                    if large_actions[i].start_x > action.start_x:
+                        large_actions[i].start_x -= action.length
 
         # elif isinstance(action, Duplication):
         #     new_dots = []
@@ -742,5 +756,5 @@ def analyze(query_genome_path: str, ref_genome_path: str, segments_file_path: st
 
 if __name__ == "__main__":
     removePythonCache(ROOT_PATH)
-    analyze(query_genome_path, ref_genome_path, segments_file_path, show_plot, output_folder, SETTINGS)
+    analyze(INPUT, query_genome_path, ref_genome_path, segments_file_path, show_plot, output_folder, SETTINGS)
     removePythonCache(ROOT_PATH)

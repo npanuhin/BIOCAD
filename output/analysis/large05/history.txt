@@ -1,9 +1,5 @@
-Rotation from 622'800 (Query) to 747'290 (Query)
+Rotation from 623'700 (Query) to 748'040 (Query)
 
-Rotation from 688'920 (Query) to 711'480 (Query)
-
-Insertion of 876'477-901'479 (Ref)
-
-Insertion of 642'362-663'770 (Ref)
+Rotation from 689'820 (Query) to 715'640 (Query)
 
 Translocation (COMING SOON)
