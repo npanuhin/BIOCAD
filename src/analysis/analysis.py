@@ -200,6 +200,9 @@ def analyze(name: str, query_genome_path: str, ref_genome_path: str, segments_fi
 
     output_folder = mkpath(ROOT_PATH, output_folder)
 
+    if not os.path.exists(mkpath(output_folder)):
+        os.mkdir(mkpath(output_folder))
+
     setSettings(settings, mkpath(output_folder, "settings.json"))
 
     with open(mkpath(ROOT_PATH, "src", "analysis", "STORAGE", "CIGAR_FLAGS.json"), 'r', encoding="utf-8") as file:
