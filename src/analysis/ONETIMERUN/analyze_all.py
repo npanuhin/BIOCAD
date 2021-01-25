@@ -58,7 +58,7 @@ def main():
         if not os.path.isdir(mkpath(ROOT_PATH, "output", "analysis", foldername)) or foldername.strip("/").strip("\\") == "small":
             continue
 
-        if int(foldername.strip("/").strip("\\").lstrip("large")) > 7:
+        if int(foldername.strip("/").strip("\\").lstrip("large")) > 6:
             continue
 
         analysis.analyze(

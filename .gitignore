@@ -1,11 +1,11 @@
 # Cache
 __pycache__
+/cache/analysis/*
+/cache/alignment/*
 
 # Exclude filters:
 /.idea
 /BWA
-/cache/analysis/*
-
 
 # Include filters:
 !*.gitkeep

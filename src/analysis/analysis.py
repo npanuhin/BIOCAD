@@ -5,6 +5,8 @@ from json import load as json_load  # , dump as json_dump
 from copy import deepcopy
 import os
 
+from timeit import default_timer as py_timer
+
 from utils import *
 
 from Line import Line, shiftLines
@@ -70,7 +72,7 @@ query_genome_path = "samples/{}/large_genome1.fasta".format(INPUT)
 ref_genome_path = "samples/{}/large_genome2.fasta".format(INPUT)
 # segments_file_path = "BWA/{}/bwa_output.sam"
 segments_file_path = "{}".format(segment_paths[INPUT])
-show_plot = True
+show_plot = False
 output_folder = "output/analysis/{}".format(INPUT)
 
 # query_genome_path = "samples/small/source.fasta"
@@ -759,5 +761,10 @@ def analyze(name: str, query_genome_path: str, ref_genome_path: str, segments_fi
 
 if __name__ == "__main__":
     removePythonCache(ROOT_PATH)
+
+    time_start = py_timer()
+
     analyze(INPUT, query_genome_path, ref_genome_path, segments_file_path, show_plot, output_folder, SETTINGS)
+
+    print("Execution time:", py_timer() - time_start)
     removePythonCache(ROOT_PATH)
