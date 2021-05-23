@@ -2,6 +2,9 @@
 
 > Currently, this repository is not intended to represent work, but rather to store and transmit data.
 
+> This project took part in the [Sakharov Readings 2021](http://www.school.ioffe.ru/readings/2021).
+> Watch the speech: https://youtu.be/Drrn39cinNs (ru)
+
 [View current test results](https://github.com/npanuhin/BIOCAD/blob/master/output/analysis/README.md)
 
 ## Probably useful
